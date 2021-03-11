@@ -783,8 +783,17 @@ final、String类不能被继承。
 ### 多态存在的3个必要条件
 
 - 继承
+
 - 重写
-- 父类引用指向子类对象：**Parent p = new Child();**
+
+- 父类引用指向子类对象：
+
+```java
+Parent p = new Child();
+p.cry();
+//父类Parent与子类Child都必须包含此cry()方法，编译阶段程序能找到Parent中的cry()方法，程序编译通过，而运行时JVM实际执行的是Child类中的cry()方法，我们称之为动态编译。
+//如果Parent中没有cry()方法，而Child类中有cry()方法，程序则编译不通过
+```
 
 ## 多态的实现方式
 
