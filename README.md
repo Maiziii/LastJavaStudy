@@ -783,14 +783,32 @@ final、String类不能被继承。
 ### 多态存在的3个必要条件
 
 - 继承
+
 - 重写
-- 父类引用指向子类对象：**Parent p = new Child();**
+
+- 父类引用指向子类对象：
+
+```java
+Parent p = new Child();
+p.cry();
+//父类Parent与子类Child都必须包含此cry()方法，编译阶段程序能找到Parent中的cry()方法，程序编译通过，而运行时JVM实际执行的是Child类中的cry()方法，我们称之为动态编译。
+/**
+ * 如果Parent中没有cry()方法，而Child类中有cry()方法，程序则编译不通过，此时需要进行类型转换
+ * 父类（高优先级） => 子类（低优先级）  
+ * 和基本类型转换一样  低转高可以直接转。
+ * 但高转低需进行强制类型转换，而且会有精度丢失
+ * ((Child)p).cry(); //编译通过
+```
 
 ## 多态的实现方式
 
 - 重写：
 - 接口
 - 抽象类和抽象方法
+
+# Day13：instanceof & 类型转换
+
+
 
 # MySQL 
 
@@ -821,4 +839,3 @@ final、String类不能被继承。
    >mysql -u root -p #连接登录mysql，注意是mysql不是mysqld
    >ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '123456'; #修改root密码
    ```
-
