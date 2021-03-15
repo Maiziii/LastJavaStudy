@@ -791,3 +791,34 @@ final、String类不能被继承。
 - 重写：
 - 接口
 - 抽象类和抽象方法
+
+# MySQL 
+
+## MySQL的安装
+
+### Windows
+
+1. 下载mysql免安装版，下载地址`https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.23-winx64.zip`（用迅雷下载比较快）
+
+2. 设置环境变量，将mysql`\bin`文件目录加入Path变量中。
+
+3. mysql根目录添加`my.ini`文件，内容如下：（注意不要新增这个`\Data`文件夹）
+
+   ```ini
+   [mysqld]
+   port=3306
+   basedir=D:\mysql\
+   datadir=D:\mysql\Data
+   #skip-grant-tables 为跳过密码验证 mysql8.0上有这一句mysql服务器无法启动，需要去掉
+   ```
+
+4. 使用管理员权限启动CMD，进入mysql\bin目录执行
+
+   ```bash
+   >mysqld --install #安装mysql服务
+   >mysqld --initialize-insecure --user=mysql #初始化mysql
+   >net start mysql #启动mysql服务
+   >mysql -u root -p #连接登录mysql，注意是mysql不是mysqld
+   >ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '123456'; #修改root密码
+   ```
+
