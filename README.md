@@ -1022,11 +1022,102 @@ try{
 4. 使用管理员权限启动CMD，进入mysql\bin目录执行
 
    ```bash
-   >mysqld --install #安装mysql服务
+   >mysqld -install #安装mysql服务  和 sc delete mysql 清空服务命令对应
    >mysqld --initialize-insecure --user=mysql #初始化mysql
    >net start mysql #启动mysql服务
-   >mysql -u root -p #连接登录mysql，注意是mysql不是mysqld
+   >mysql -uroot -p #连接登录mysql，注意是mysql不是mysqld
    #mysql8.0 password()函数不适用改用md5()
    >ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '123456'; #修改root密码 
    >update mysql.user set authentication_string=md5('123456') where user='root' and host='hostlocal'; 
+   >flush privileges; #刷新权限
    ```
+
+## 安装SQLyog
+
+[下载链接](\安装文件\SQLyog.zip)
+
+名称：随意   注册码：8d8120df-a5c3-4989-8f47-5afc79c56e7c
+
+## 创建数据库
+
+```sql
+CREATE DATABASE `school` CHARACTER SET utf8 COLLATE utf8_general_ci;
+drop database [if exists] `school`;
+--反引号``类似于SQL Server的[]用于区分关键字
+```
+
+![image-20210316114757403](.\assets.md\创建数据库.png)
+
+## 创建表
+
+![](.\assets.md\使用sqlyog创建mysql表.png)
+
+```sql
+--常用命令
+show databases;  --显示所有数据库
+use school; --切换数据库school
+show tables; --查看数据库所有表
+describe student; --查看表信息
+create database XXX; --创建数据库
+```
+
+数据库xxx语言 CRUD增删改查     CRUD程序员（业务程序员）  CV程序员（面向百度） API程序员
+
+DDL 数据库定义语言
+
+DML操作语言
+
+DQL查询
+
+DCL 控制
+
+## 字段类型
+
+- 数值 
+
+  **int  4个字节** 
+
+  **decimal 字符串形式的浮点型（金融计算常见）**
+
+- 字符串
+
+  char 字符串固定大小 255
+
+  **varchar 可变字符串 65535**
+
+  tinytext 微型文本 2^8-1
+
+  **text  文本类型 2^16-1**
+
+- 时间日期
+
+  data YYYY-MM-DD
+
+  time HH:mm:ss  
+
+  **datetime YYYY-MM-DD HH:mm:ss**  
+
+  **timestamp 时间戳**
+
+- null
+
+  <font color='red'>没有值，未知，不要用NULL进行运算，结果一定为NULL</font>
+
+## 字段属性
+
+- unsigned 无符号整数、声明该列不能为负数
+
+- zerofill    0填充，不足的位使用0来填充 int(3)  5-->005
+
+- 自增 可设置初始值、步长
+
+- 非空 NOT NULL 字段必须有值
+
+- 默认 设置默认的值
+
+**阿里巴巴约定文档规定数据库表需有如下字段**
+
+| id   | version | is_delete | gmt_create | gmt_update |
+| ---- | ------- | --------- | ---------- | ---------- |
+| 主键 | 乐观锁  | 逻辑删除  | 创建时间   | 更新时间   |
+
