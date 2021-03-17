@@ -36,6 +36,16 @@
 
 [点击我跳转到辉煌的未来](https://www.hpr.com)
 
+**跳转到其他标题**
+
+[6.1.AWS管理控制台](#6.1.AWS管理控制台)
+
+语法为：`[链接显示的内容](#某个标题)`
+
+注意：
+
+()括号里面是#井号后面直接跟标题的名字，我发现只能跳转到文中某个标题的位置，不能跳转到文中某段文字的位置。
+
 ## 图片
 
 **格式：\!\[图片标题\]\(图片网络或者本地路径\) **
@@ -999,7 +1009,108 @@ try{
 
 
 
-# MySQL 
+# 数据库三大范式
+
+**范式（NF，NormalForm）是符合某一种级别的关系模式的集合**
+
+## 第一范式（1NF）
+
+数据库表的每一列都是不可分割的原子数据项。
+
+![img](.\assets.md\第一范式.png)
+
+在上面的表中，“家庭信息”和“学校信息”列均不满足原子性的要求，故不满足第一范式，调整如下：
+
+![img](.\assets.md\第一范式改.png)
+
+## 第二范式（2NF）
+
+**第二范式需要确保数据库表中的每一列都和主键相关，而不能只与主键的某一部分相关（主要针对[联合主键](#复合主键&联合主键)而言）。**
+
+举例说明：
+
+![img](.\assets.md\第二范式.png)
+
+在上图所示的情况中，同一个订单中可能包含不同的产品，因此主键必须是`订单号`和`产品号`联合组成，
+
+但可以发现，`产品数量`、`产品折扣`、`产品价格`与`订单号`和`产品号`都相关，但是`订单金额`和`订单时间仅`与`订单号`相关，与`产品号`无关，
+
+这样就不满足第二范式的要求，调整如下，需分成两个表：
+
+ ![img](.\assets.md\第二范式1.png) ![img](.\assets.md\第二范式2.png)
+
+## 第三范式（3NF）
+
+**在2NF基础上，任何非主属性不依赖于其它非主属性（在2NF基础上消除传递依赖）**
+
+**第三范式需要确保数据表中的每一列数据都和主键直接相关，而不能间接相关。**
+
+举例说明：
+
+![img](.\assets.md\第三范式1.png)
+
+上表中，所有属性都完全依赖于`学号`，所以满足第二范式，但是`班主任性别`和`班主任年龄`直接依赖的是`班主任姓名`，而不是主键`学号`，所以需做如下调整：
+
+![img](.\assets.md\第三范式2.png) ![img](.\assets.md\第三范式3.png)
+
+**符合范式也就是规范，与效率有时候不可兼得，此时效率更重要**
+
+# 复合主键&联合主键
+
+## 复合主键
+
+指表的主键含有一个以上的字段组成 。 例如； 
+
+```sql
+create table test ( 
+    name varchar(32), 
+    id int, 
+    value varchar(32), 
+    primary key (id,name) 
+) 
+```
+
+## 联合主键
+
+顾名思义由多个主键联合形成一个主键组合，体现在联合。如：主键A跟主键B组成联合主键。
+
+**联合主键体现在多个表上，复合主键体现在一个表中的多个字段**
+
+```sql
+--学生表
+create table student(
+id mediumint  auto_increment comment '主键id',
+name varchar(30) comment '姓名',
+age smallint comment '年龄',
+primary key(id,name)  --复合主键
+)
+engine = myisam,
+charset = utf8,
+comment = '学生'
+
+--课程表
+create table course(
+id mediumint  auto_increment comment '主键id',
+name varchar(30) comment '课程名称',
+primary key(id)
+)
+engine = myisam,
+charset = utf8,
+comment = '课程'
+
+--学生课程表
+create table IF NOT EXISTS stu_cour(
+id mediumint  auto_increment comment '主键id',
+stu_id mediumint comment '学生表id',
+cour_id mediumint comment '课程表id',
+primary key(id)
+)
+engine = myisam,
+charset = utf8,
+comment = '学生课程表'
+
+--此时stu_cour中id就表示联合主键，通过id可以获取学生和课程的一条记录
+```
 
 ## MySQL的安装
 
