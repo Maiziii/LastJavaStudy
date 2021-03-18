@@ -90,6 +90,20 @@ public static void main(){
 - 敲下回车自动生成
 - ...
 
+# Github
+
+## github搜索
+
+| 限定符              | 示例                                                         |
+| :------------------ | :----------------------------------------------------------- |
+| `in:name`           | [**jquery in:name**](https://github.com/search?q=jquery+in%3Aname&type=Repositories) 匹配仓库名称中含有 "jquery" 的仓库。 |
+| `in:description`    | [**jquery in:name,description**](https://github.com/search?q=jquery+in%3Aname%2Cdescription&type=Repositories) 匹配仓库名称或说明中含有 "jquery" 的仓库。 |
+| `in:readme`         | [**jquery in:readme**](https://github.com/search?q=jquery+in%3Areadme&type=Repositories) 匹配仓库自述文件中提及 "jquery" 的仓库。 |
+| `repo:owner/name`   | [**repo:octocat/hello-world**](https://github.com/search?q=repo%3Aoctocat%2Fhello-world) 匹配特定仓库名称。 |
+| `stars:n`           | [**stars:500**](https://github.com/search?utf8=✓&q=stars%3A500&type=Repositories) 匹配恰好具有 500 个星号的仓库,[**stars:10..20**](https://github.com/search?q=stars%3A10..20+size%3A<1000&type=Repositories) 匹配具有 10 到 20 个星号、小于 1000 KB 的仓库。[**stars:>=500 fork:true language:php**](https://github.com/search?q=stars%3A>%3D500+fork%3Atrue+language%3Aphp&type=Repositories) 匹配具有至少 500 个星号，包括复刻的星号（以 PHP 编写）的仓库。 |
+| `language:LANGUAGE` | [**rails language:javascript**](https://github.com/search?q=rails+language%3Ajavascript&type=Repositories) 匹配具有 "rails" 字样、以 JavaScript 编写的仓库 |
+| Awesome + 关键字    | 通过该关键字搜索出来的都是比较好的一些资源，排名靠前的项目人气都非常高。 |
+
 # DayX：dos命令
 
 ```bash
@@ -1009,11 +1023,13 @@ try{
 
 
 
-# 数据库三大范式
+# 数据库
+
+## 三大范式
 
 **范式（NF，NormalForm）是符合某一种级别的关系模式的集合**
 
-## 第一范式（1NF）
+### 第一范式（1NF）
 
 数据库表的每一列都是不可分割的原子数据项。
 
@@ -1023,7 +1039,7 @@ try{
 
 ![img](.\assets.md\第一范式改.png)
 
-## 第二范式（2NF）
+### 第二范式（2NF）
 
 **第二范式需要确保数据库表中的每一列都和主键相关，而不能只与主键的某一部分相关（主要针对[联合主键](#复合主键&联合主键)而言）。**
 
@@ -1039,7 +1055,7 @@ try{
 
  ![img](.\assets.md\第二范式1.png) ![img](.\assets.md\第二范式2.png)
 
-## 第三范式（3NF）
+### 第三范式（3NF）
 
 **在2NF基础上，任何非主属性不依赖于其它非主属性（在2NF基础上消除传递依赖）**
 
@@ -1055,9 +1071,9 @@ try{
 
 **符合范式也就是规范，与效率有时候不可兼得，此时效率更重要**
 
-# 复合主键&联合主键
+## 复合主键&联合主键
 
-## 复合主键
+### 复合主键
 
 指表的主键含有一个以上的字段组成 。 例如； 
 
@@ -1070,7 +1086,7 @@ create table test (
 ) 
 ```
 
-## 联合主键
+### 联合主键
 
 顾名思义由多个主键联合形成一个主键组合，体现在联合。如：主键A跟主键B组成联合主键。
 
@@ -1112,7 +1128,11 @@ comment = '学生课程表'
 --此时stu_cour中id就表示联合主键，通过id可以获取学生和课程的一条记录
 ```
 
-## MySQL的安装
+## 事务
+
+### acid
+
+# MySQL的安装
 
 ### Windows
 
