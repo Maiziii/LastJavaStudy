@@ -1298,3 +1298,232 @@ DCL 控制
 | ---- | ------- | --------- | ---------- | ---------- |
 | 主键 | 乐观锁  | 逻辑删除  | 创建时间   | 更新时间   |
 
+# JDBC
+
+1. 导入jar
+
+    新建lib目录（选择Directory），将`mysql-connector-java-8.0.23.jar`复制到lib目录下
+
+    ![image-20210320155723312](.\assets.md\添加jar到lib.png)
+
+2. 代码
+
+```java
+//加载驱动
+Class.forName("com.mysql.cj.jdbc.Driver"); //mysql8.0和5.7不一样
+//连接mysql，connection就是数据库，可以完成所有的数据库操作
+Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hpr?characterSet=uft8&useUnicode=true", "root", "123456");
+//事务提交、回滚、取消自动提交
+connection.commit(); //一旦执行了commit()，即使执行rollback()也回滚不了
+connection.rollback();
+connection.setAutoCommit(false);
+
+//获取数据库执行类 Statement 和 prepareStatement
+Statement statement = connection.createStatement();
+//执行sql
+ResultSet resultSet = statement.executeQuery("select username,nickname from t_user where is_alive=0;");
+//获取结果集
+while (resultSet.next()) {
+    System.out.println("username:" + resultSet.getObject("username")+"；nickname:" + resultSet.getObject("nickname"));
+}
+//关闭
+resultSet.close();
+statement.close();
+connection.close();
+```
+
+Statement执行sql会有SQL注入的情况，正常我们使用PreparedStatement
+
+```java
+Connection connection = null;
+PreparedStatement st = null;
+ResultSet rs = null;
+try {
+    connection = JdbcUtil.getConnection();
+    st = connection.prepareStatement("update t_user set phonenumber=? where id=?");
+    st.setString(1,"xxxxxxxx");
+    st.setInt(2,0);
+    st.executeUpdate();  
+} catch (Exception e) {
+    e.printStackTrace();
+}finally {
+    JdbcUtil.release(connection,st,rs);
+}
+```
+
+## 自己封装的 JdbcUtil.java工具类
+
+在`\src`目录下创建`db.properties`
+
+```properties
+#值不要用""引号包裹
+driver=com.mysql.cj.jdbc.Driver
+url=jdbc:mysql://localhost:3306/hpr?useUnicode=true&characterSet=utf8
+username=root
+password=123456
+```
+
+```java
+package com.hpr.util;
+
+import java.io.InputStream;
+import java.sql.*;
+import java.util.Properties;
+
+public class JdbcUtil {
+    private static String url = "";
+    private static String username = "";
+    private static String password = "";
+
+    //类加载时被调用，只执行一次
+    static {
+        try {
+            InputStream is = JdbcUtil.class.getClassLoader().getResourceAsStream("db.properties");
+            Properties properties = new Properties();
+            properties.load(is);
+            driver = properties.getProperty("driver");
+            url = properties.getProperty("url");
+            username = properties.getProperty("username");
+            password = properties.getProperty("password");
+            Class.forName(driver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, username, password);
+    }
+
+    public static void release(Connection con, Statement st, ResultSet rs){
+        if(con!=null){
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if(st!=null){
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if(rs!=null){
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+## 数据库连接池 
+
+数据库连接 --- 执行完毕 --- 释放 十分浪费资源
+
+**池化技术：预先准备一些资源，过来就连接预先准备好的连接。**
+
+编写连接池：实现一个接口 DataSource
+
+> 开源 DBCP、C3P0、Druid（阿里巴巴）
+
+> DBCP
+
+1. 导入dbcp的jar包 commons-dbcp2-2.8.0.jar  核心包 commons-pool2-2.9.0.jar 辅助包 commons-logging-1.2.jar
+
+2. 创建配置文件，设置连接池参数(初始连接数，最大连接数，最大等待时间)
+
+3. 创建连接池对象DataSource对象
+4. DataSource获取连接对象(getConnection() 方法)
+
+```java
+package com.hpr.util;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSourceFactory;
+import javax.sql.DataSource;
+import java.io.InputStream;
+import java.sql.*;
+import java.util.Properties;
+
+public class JdbcUtil_Dbcp {
+    private static DataSource dataSource = null;
+    static {
+        try {
+            InputStream is = JdbcUtil_Dbcp.class.getClassLoader().getResourceAsStream("dbcp.properties");
+            Properties properties = new Properties();
+            properties.load(is);
+            dataSource = BasicDataSourceFactory.createDataSource(properties);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+    public static void release(Connection con, Statement st, ResultSet rs) {
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (st != null) {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+```
+
+
+
+
+
+
+
+## IDEA连接MySQL
+
+![image-20210321111346150](.\assets.md\IDEA连接mysql.png)
+
+![image-20210321112430553](.\assets.md\mysql的serverTimezone参数.png)
+
+# HTTP协议
+
+超文本传输协议，一种简单的请求响应协议，通常运行于TCP之上。
+
+文本指的是：html、字符串等等，超文本：视频、音频、图片、定位、地图
+
+http/1.0  客户端与web服务器建立连接后只能获取一个web资源，然后断开连接
+
+http/1.1  客户端与web服务器建立连接后可以获取多个web资源
+
+## HTTP请求头
+
+```xml
+Accept :告诉浏览器，所支持的数据类型
+Accept-Encoding  支持的编码格式 UTF8 GBK ISO8859-1
+Accept-Language 语言环境
+Cache-Control 缓存控制
+Connection 告诉浏览器 请求完成是否保存连接
+```
+
+## HTTP请求体
+
+当你在浏览器的地址栏输入地址并回车的一瞬间到 页面能够展示回来，经历了什么？
