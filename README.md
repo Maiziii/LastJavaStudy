@@ -1527,3 +1527,112 @@ Connection 告诉浏览器 请求完成是否保存连接
 ## HTTP请求体
 
 当你在浏览器的地址栏输入地址并回车的一瞬间到 页面能够展示回来，经历了什么？
+
+# Maven
+
+**约定大于配置**
+
+环境变量配置M2_HOME和MAVEN_HOME变量
+
+Maven的JavaWeb应用
+
+
+
+![image-20210326110755926](.\assets.md\Maven文件夹类型.png)
+
+# Servlet
+
+## Servlet简介
+
+- sun公司推出的用于实现动态web的技术
+
+- Sun在这些API中提供一个接口：Servlet，开发一个Servlet程序，只要2个步骤
+
+  - 编写一个类，实现Servlet接口
+
+  - 将开发好的java类部署到web服务器中
+
+    
+
+把实现了Servlet接口的java程序称为Servlet
+
+## 第一个Servlet程序HelloServlet
+
+Servlet有两个默认的实现类：HttpServlet、GenericServlet
+
+1. 构建一个普通的Maven项目，删掉里面的src目录，以后我们的学习就在这个项目里面建立Module；这个空的工程就是Maven主工程
+
+2. 父项目不使用模板只创建一个空的maven项目，子项目使用maven-archivetype-webapp模板创建，子项目会继承父项目的pom设置
+
+   父项目的pom.xml
+
+   ```xml
+   <modules>
+       <module>servlet-01</module>
+   </modules>
+   ```
+
+   子项目中
+
+   ```xml
+   <parent>
+       <groupId>com.hpr</groupId>
+       <artifactId>javaweb-01-servlet</artifactId>
+       <version>1.0-SNAPSHOT</version>
+   </parent>
+   ```
+   修改web.xml文件
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+              http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+             version="4.0">
+
+        <welcome-file-list>
+            <welcome-file>index.html</welcome-file>
+            <welcome-file>index.htm</welcome-file>
+            <welcome-file>index.jsp</welcome-file>
+        </welcome-file-list>
+    </web-app>
+    ```
+
+
+3. 编写一个普通类，实现Servlet接口，这里我们继承HttpServlet类
+
+```java
+public class HelloServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        PrintWriter writer = resp.getWriter();
+        writer.println("wo shi nibaba");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req,resp);
+    }
+}
+```
+
+4. 设置Servlet的映射
+
+   为什么需要映射？因为我们写的是Java程序，浏览器需要通过web服务器才能访问。
+
+   我们需要在web服务器中注册Servlet，并且配置一个浏览器能够访问的路径。
+
+   在web.xml中配置如下
+
+```xml
+  <servlet>
+    <servlet-name>hello</servlet-name>
+    <servlet-class>com.hpr.servlet.HelloServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>hello</servlet-name>
+    <url-pattern>/hello</url-pattern>
+  </servlet-mapping>
+```
+
