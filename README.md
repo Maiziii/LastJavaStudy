@@ -1835,7 +1835,35 @@ web容器启动的时候，会为每个web容器创建一个对应的ServletCont
   }
   ```
 
-- 
+- 获取初始化参数
+
+- 请求转发（RequestDispath）
+
+  ```java
+  public class ReadServlet extends HttpServlet {
+      protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          ServletContext context = this.getServletContext();
+          context.getRequestDispatch("/hello").forward(req,resp);
+      }
+  
+      @Override
+      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          doGet(req,resp);
+      }
+  }
+  ```
+
+  转发（不会改变路径）
+
+  ![image-20210329232500904](.\assets.md\请求转发.png)
+
+  重定向
+
+  ![image-20210329232554240](.\assets.md\请求重定向.png)
+
+- 读取资源文件
+
+  Properties
 
 ## 下载文件
 
@@ -1878,4 +1906,6 @@ public class FileDownLoadServlet extends HttpServlet {
     }
 }
 ```
+
+
 
