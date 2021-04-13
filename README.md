@@ -1836,3 +1836,46 @@ web容器启动的时候，会为每个web容器创建一个对应的ServletCont
   ```
 
 - 
+
+## 下载文件
+
+1. 获取浏览器要下载文件的路径
+2. 获取文件名称
+3. 取得OutputSteam输出流
+4. 将FileInputStream输出到buffer缓冲区
+5. 设置响应头（content-disposition）
+
+```java
+public class FileDownLoadServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ServletContext servletContext = this.getServletContext();
+        //1、获取要下载的文件路径以及文件名称
+        //String filePath = servletContext.getRealPath("\\QQ截图20210413145401.png");
+        //String filePath = servletContext.getResourcePaths("/WEB-INF/classes/QQ截图20210413145401.png");
+        String filePath = "D:\\IntelliJ IDEA 2019.2.4\\IdeaSpace\\javaweb-01-servlet\\servlet-01\\src\\main\\resources\\QQ截图20210413145401.png";
+        String fileName = filePath.substring(filePath.lastIndexOf("/"));
+        //中文文件名URLEncoder.encode编码，否则有可能乱码
+        resp.setHeader("Content-Disposition","attachment;filename="+ URLEncoder.encode(fileName,"UTF-8"));
+        //4、获取下载文件的输入流
+        FileInputStream in = new FileInputStream(filePath);
+        //5、创建缓冲区
+        int len = 0;
+        byte[] buffer = new byte[1024];
+        //6、获取OutputStream对象
+        ServletOutputStream out = resp.getOutputStream();
+        //7、将FileOutputStream流写入到buffer缓冲区，使用OutputStream将缓冲区中的数据输出到客户端
+        while((len=in.read(buffer))>-1){
+            out.write(buffer);
+        }
+        out.close();
+        in.close();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        this.doGet(req, resp);
+    }
+}
+```
+
