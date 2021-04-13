@@ -1,4 +1,4 @@
-# Day01：Markdown语法
+# 0Day01：Markdown语法
 
 ## 标题
 
@@ -695,7 +695,7 @@ class Person{
 **Idea快捷键： Alt + Insert 选择选择Constructor来快速生成有参/无参构造器**
 
 ## 堆&栈
-![a](\assets.md\Java运行的堆与栈1.png)
+![a](.\assets.md\Java运行的堆与栈1.png)
 
 # Day10：封装 & 继承 
 
@@ -718,7 +718,7 @@ class Person{
 
 程序应遵循**高内聚、低耦合**，应禁止直接访问对象的属性，而应该是通过某一接口来访问。***封装可以说就是将数据隐藏***
 
-**一句话：私有属性 配合 getter/setter 方法。**优点：统一用set方法可以很好地对属性进行赋值将值限定到一定范围内，比如年龄（限制1-100），统一用set方法就可以在对年龄属性进行赋值时进行判断参数的范围。
+**一句话：私有属性 配合 getter/setter 方法。**优点：统一用setter方法可以很好地对属性进行赋值将值限定到一定范围内，比如年龄（限制1-100），统一用setter方法就可以在对年龄属性进行赋值时进行判断参数的范围。
 
 **快捷键：Alt + Insert**
 
@@ -767,7 +767,7 @@ final、String类不能被继承。
 
 ## 重载
 
-> 重载(overloading) 是在一个类里面，方法名字相同，而参数不同。返回类型可以相同也可以不同。
+> 重载(overload) 是在一个类里面，方法名字相同，而参数不同。返回类型可以相同也可以不同。
 >
 > 每个重载的方法（或者构造函数）都必须有一个独一无二的参数类型列表。
 >
@@ -1532,11 +1532,9 @@ Connection 告诉浏览器 请求完成是否保存连接
 
 **约定大于配置**
 
-环境变量配置M2_HOME和MAVEN_HOME变量
+环境变量配置M2_HOME（maven的bin目录）和MAVEN_HOME变量，path变量加%MAVEN_HOME%\bin
 
 Maven的JavaWeb应用
-
-
 
 ![image-20210326110755926](.\assets.md\Maven文件夹类型.png)
 
@@ -1820,7 +1818,7 @@ web容器启动的时候，会为每个web容器创建一个对应的ServletCont
       protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
           ServletContext context = this.getServletContext();
           Object attribute = context.getAttribute("username");
-          //声明resp的content-type和编码，否则中文显示为问好 ???
+          //声明resp的content-type和编码，否则中文显示为问号 ???
           resp.setHeader("content-type","text/html;charset=UTF-8");
           // resp.setContentType("text/html");
           // resp.setCharacterEncoding("UTF-8");
@@ -1853,7 +1851,7 @@ web容器启动的时候，会为每个web容器创建一个对应的ServletCont
   }
   ```
 
-  转发（不会改变路径）
+  转发（不会改变路径），http请求响应码为200而不是3xx
 
   ![image-20210329232500904](.\assets.md\请求转发.png)
 
@@ -1864,3 +1862,28 @@ web容器启动的时候，会为每个web容器创建一个对应的ServletCont
 - 读取资源文件
 
   Properties
+  
+  ![image-20210404150321526](.\assets.md\servletcontext-properties.png)
+  
+  如果properties放到了java目录下，资源导出会有问题，需要在该module的pom.xml配置build节点
+  
+  ```xml
+  <build>
+      <!-- 配置build resources节点防止资源导出失败的问题 -->
+      <resources>
+          <resource>
+              <directory>src/main/java</directory>
+              <includes>
+                  <include>**/*.properties</include>
+                  <include>**/*.xml</include>
+              </includes>
+              <filtering>true</filtering>
+          </resource>
+      </resources>
+  </build>
+  ```
+  
+  ![image-20210404151205176](.\assets.md\servlet-properties-02.png)
+  
+  关于classes  classpath路径，我们习惯称target/module/classes/目录为class path目录
+
