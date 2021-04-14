@@ -1,3 +1,17 @@
+# Tomcat9乱码
+
+打开/bin/startup.bat发现启动日志就已经有乱码
+
+![image-20210414160446458](.\assets.md\tomcat乱码01.png)
+
+修改/conf/logging.properties中
+
+![image-20210414160918762](.\assets.md\tomcat乱码02.png)
+
+Tomcat启动就不会乱码了
+
+
+
 # Day01：Markdown语法
 
 ## 标题
@@ -1865,7 +1879,7 @@ web容器启动的时候，会为每个web容器创建一个对应的ServletCont
 
   Properties
 
-## 下载文件
+- 下载文件
 
 1. 获取浏览器要下载文件的路径
 2. 获取文件名称
