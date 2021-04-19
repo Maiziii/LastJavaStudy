@@ -1,5 +1,18 @@
-# 0Day01：Markdown语法
+# Tomcat9乱码
 
+打开/bin/startup.bat发现启动日志就已经有乱码
+
+![image-20210414160446458](.\assets.md\tomcat乱码01.png)
+
+修改/conf/logging.properties中
+
+![image-20210414160918762](.\assets.md\tomcat乱码02.png)
+
+Tomcat启动就不会乱码了
+
+
+
+# Day01：Markdown语法
 ## 标题
 
 #+空格+文字    =>  一级标题
@@ -1863,30 +1876,30 @@ web容器启动的时候，会为每个web容器创建一个对应的ServletCont
 
   Properties
 
-  ![image-20210404150321526](.\assets.md\servletcontext-properties.png)
-  
-  如果properties放到了java目录下，资源导出会有问题，需要在该module的pom.xml配置build节点
-  
-  ```xml
-  <build>
-      <!-- 配置build resources节点防止资源导出失败的问题 -->
-      <resources>
-          <resource>
-              <directory>src/main/java</directory>
-              <includes>
-                  <include>**/*.properties</include>
-                  <include>**/*.xml</include>
-              </includes>
-              <filtering>true</filtering>
-          </resource>
-      </resources>
-  </build>
-  ```
-  
-  ![image-20210404151205176](.\assets.md\servlet-properties-02.png)
-  
-  关于classes  classpath路径，我们习惯称target/module/classes/目录为class path目录
-  =======
+![image-20210404150321526](.\assets.md\servletcontext-properties.png)
+
+如果properties放到了java目录下，资源导出会有问题，需要在该module的pom.xml配置build节点
+
+```xml
+<build>
+    <!-- 配置build resources节点防止资源导出失败的问题 -->
+    <resources>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.properties</include>
+                <include>**/*.xml</include>
+            </includes>
+            <filtering>true</filtering>
+        </resource>
+    </resources>
+</build>
+```
+
+![image-20210404151205176](.\assets.md\servlet-properties-02.png)
+
+**关于classes  classpath路径，我们习惯称target/module/classes/目录为class path目录**
+
 
 ## 下载文件
 
@@ -1928,6 +1941,38 @@ public class FileDownLoadServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
     }
+}
+```
+
+## 验证码的实现
+
+```java
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
+    										throws ServletException, IOException {
+    ServletContext servletContext = this.getServletContext();
+    //设置浏览器每3s刷新一次
+    resp.setHeader("refresh","3");
+    BufferedImage bufferedImage = 
+        				new BufferedImage(200,30, BufferedImage.TYPE_INT_RGB);
+    Graphics g = bufferedImage.getGraphics();
+    g.setColor(Color.WHITE);
+    g.fillRect(0,0,200,30);
+    g.setColor(Color.BLACK);
+    g.setFont(new Font(null,Font.BOLD,28));
+    g.drawString(randNum(),0,29);
+    //g.dispose();
+    //告诉浏览器这个请求用图片的方式打开
+    resp.setContentType("image/png");
+    //网站有缓存，不让浏览器缓存
+    resp.setDateHeader("expires",-1);
+    resp.setHeader("Cache-Control","no-cache");
+    resp.setHeader("Pragma","no-cache");
+    //将图片写给浏览器
+    ImageIO.write(bufferedImage,"png",resp.getOutputStream());
+}
+public static String randNum(){
+    String s = "000"+ new Random().nextInt(9999);
+    return s.substring(s.length()-4);
 }
 ```
 
