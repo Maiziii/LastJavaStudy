@@ -160,7 +160,7 @@ public class HelloWorld{
 
 ## IDEA中Project和Module
 当新建一个Empty Project的时候需要再添加一个Module才能开始写代码文件，之后需配置Project的环境如下图
-<img src="\assets.md\1614181299(1).jpg" alt="1614181299(1)" style="zoom: 67%;" />
+<img src=".\assets.md\1614181299(1).jpg" alt="1614181299(1)" style="zoom: 67%;" />
 
 ## 注释
 
@@ -407,11 +407,11 @@ public class TestJavaDoc {
 
 即可生成Java文档
 
-![自己的Java文档](\assets.md\生成JavaDoc.jpg)
+![自己的Java文档](.\assets.md\生成JavaDoc.jpg)
 
 ## Java的输入类：Scanner 
 
-**next()**和**nextLine()**的区别：next()遇到空格就停止，next()取到空格字符。nextLine()是遇到回车符才停止，能取到空格字符。
+**next()**和**nextLine()**的区别：next()遇到空格就停止，next()取不到空格字符。nextLine()是遇到回车符才停止，能取到空格字符。
 
 ```java
 Scanner scanner = new Scanner(System.in);
@@ -442,7 +442,7 @@ scanner.close();
 //当输入10时，程序输出信息 "输入的整数i：xxx" 然后让你再次输入，如果输入小数 程序输出 "输入的小数f：xxx"
 //如果第一次输入10.2 程序会直接输出信息 
 "不是整数"
-"输入的小数f：xxx"
+"输入的小数f：10.2"
 //如果输入的是 abc 程序输出
 "不是整数"
 "不是小数"
@@ -479,11 +479,11 @@ switch(expression) {
 
 方法1：
 
-![Decompile](\assets.md\IDEA反编译class文件.jpg)
+![Decompile](.\assets.md\IDEA反编译class文件.jpg)
 
 方法2：
 
-![Decompile2](\assets.md\IDEA获取程序Class文件.jpg)
+![Decompile2](.\assets.md\IDEA获取程序Class文件.jpg)
 
 # Day07：while & do while & for
 
@@ -548,7 +548,7 @@ public class CommandLine {
 1. javac编译.java文件生成.class文件，可以在src路径或.java当前路径执行javac进行编译。
 2. java ClassName执行文件，注意要在src路径下执行，可以以包名.ClassName的方式执行，也可以路径的形式/.../.../ClassName的方式执行，如果后面跟着字符串便会被当成是传入main方法的参数。
 
-<img src="\assets.md\命令行传递参数.jpg" alt="命令行传递参数" style="zoom:80%;" />
+<img src=".\assets.md\命令行传递参数.jpg" alt="命令行传递参数" style="zoom:80%;" />
 
 ## 可变参数
 
