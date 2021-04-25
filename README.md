@@ -591,10 +591,13 @@ public class VarArgs {
 ```java
 int[] i; // 数组的声明
 int i[]; // C语音对于数组的声明，Java中不提倡
+
 Man[] mans = new Man[3]; //初始化数组的长度
 mans[0] = new Man(); //动态初始化，必须先确定数组长度，否则会报错；数组长度可以用int变量指定
-int[] i1 = new int[]{1,2,3};//静态初始化
-int[] i2 = {1,2,3};//静态初始化省略格式
+
+int[] i1 = new int[]{1,2,3};//静态初始化完整格式
+int[] i2 = {1,2,3};//静态初始化省略格式，强烈建议不适用省略格式，静态初始化都用完整格式，可以使用匿名数组这一概念，如下
+System.out.println(new int[] {1, 2, 4, 545, 11, 32, 13131, 4444}.length);
 userFunction({1,2,3,4});//错误！作为实参传入的时候不能省略，应该写成userFunction(new int[]{1,2,3,4});
 Girl[] girls = { new Girl(),new Girl() };//静态初始化省略格式
 ```
