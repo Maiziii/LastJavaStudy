@@ -10,6 +10,113 @@
 
 Tomcat启动就不会乱码了
 
+## req.getParameter("参数名")乱码的问题
+
+[上面的Tomcat乱码解决方案](#Tomcat9乱码)虽然解决了Tomcat启动的乱码问题，但是在form提交数据，servlet使用req.getParameter获取参数值的时候还是出现了乱码，使用网上的解决方法（如下）还是不能解决乱码问题。
+
+1. 设置Servlet的编码
+
+```java
+ request.setCharacterEncoding("utf-8");
+ response.setContentType("text/html;charset=utf-8");
+```
+
+2. 设置req.getParameter编码
+
+```java
+String str = new String(request.getParameter("参数名").getBytes("iso-8859-1"), "utf-8");
+```
+
+3. 设置Tocmat server.xml 增加URIEncoding属性
+
+```xml
+<Connector port="8080" protocol="HTTP/1.1"   
+    connectionTimeout="20000"   
+    redirectPort="8444"   
+    URIEncoding="UTF-8" />
+```
+
+**正确的解决方案：**
+
+IDEA - Help - Edit Custom VM Options中设置 `-Dfile.encoding=utf-8`如果以此法设置req.getParam()就不会出现乱码，但是Tomcat启动时控制台产生乱码要把上面[解决Tomcat启动乱码](#Tomcat9乱码)的方法回滚GBK设置为默认的UTF-8就可以了
+
+## （参考）网上的一篇关于解决乱码的文章 [点此超链接](https://blog.csdn.net/newObject__/article/details/103339342)
+
+### 1. 和 请求/响应无关 的中文乱码问题
+
+这里要记录一下，使用 tomcat 在 servlet 中随便打印一行中文数据都出现乱码啊啊啊啊啊啊！
+sout，serr这种情况，居然都有乱码？这明明和 请求/响应 无关啊！
+
+面向百度编程------>
+得到的结果是：这个问题要么修改 tomcat 的配置文件，要么在IDEA中tomcat的配置中
+有个 VM Options，给他填充一个数据： 
+
+```properties
+-Dfile.encoding=utf-8
+```
+
+配置文件我没有改，懒得去找path了，直接改 VM Options 方便嘛！
+控制我们自己打印的数据信息 中文乱码问题 完美解决
+
+### 2. tomcat 启动时，还有日常的日志打印 中文乱码问题
+
+这个不得已，必须得去改配置文件了，在 tomcat 的安装路径下，找到conf文件夹，里面有个 logging.properties 配置文件，我们用记事本打开它，然后在
+
+```properties
+java.util.logging.ConsoleHandler.level = FINE
+java.util.logging.ConsoleHandler.formatter = org.apache.juli.OneLineFormatter
+```
+这两行的下面添加一行配置：
+
+```properties
+java.util.logging.ConsoleHandler.encoding = UTF-8
+```
+完美解决日志信息的中文乱码问题
+
+### 3. servlet 中 请求/响应 中文乱码问题解决
+这里请求的话就只分为 get/post 这两种最常用的方式 去解决中文乱码
+
+#### get请求
+
+get请求没有请求报文，只能在url上传输参数，那么出现乱码的第一个地方：在我们填写完url后，浏览器传给tomcat，tomcat解析的时候就不老实地按照utf-8解析，导致我们拿到数据就是乱码的然后 resp.getWrite().write(param) 打在页面上，自然而然就是乱码。
+如何解决tomcat解析URI时出现的乱码问题呢？
+
+改配置文件！
+ 还是 tomcat 的安装目录下的 cong 文件夹，找到server.xml,然后在 <Connector> 标签中，拼接参数： URIEncoding="UTF-8"  (注意：这里是URI不是URL)
+
+**这个做法，仅适用于 tomcat 8 以前的版本！tomcat 8 以后的版本，自动设置了这个参数，如果我们强行添加，反而在 tomcat 解析 URI的时候 出现乱码**
+tomcat 以utf-8正常解析参数后，我们使用 resp.getWrite().write() 给页面打印中文时候还出现乱码！
+这种情况就要说我们没有给定响应的解析格式（暂时这么理解吧），我们也不知道它是按照哪儿种编码格式解析响应中的数据，我们就一劳永逸的直接设置响应的解析格式：
+
+在doGet方法中加上这两行代码：
+
+```java
+resp.setContentType("text/html;charset=utf-8");// 这个是告诉浏览器，服务器返回的响应是什么格式的文件
+resp.setCharacterEncoding("utf-8");// 这个是告诉浏览器，服务器返回的响应你要以什么编码格式解析
+```
+
+#### post请求
+
+post请求是含有请求报文的，我们在doPost方法直接加上三行代码
+
+```java
+req.setCharacterEncoding("utf-8");// 这个是告诉服务器，请求报文以什么编码格式解析，这里是utf-8
+resp.setContentType("text/html;charset=utf-8");// 这个是告诉浏览器，服务器返回的响应是什么格式的文件,这里是text/html
+resp.setCharacterEncoding("utf-8");// 这个是告诉浏览器，服务器返回的响应你要以什么编码格式解析，这里是utf-8
+```
+
+
+综上，tomcat常见的中文乱码导致原因
+
+1. 浏览器向服务器发送请求时，服务器解析请求出现乱码；
+
+2. 服务器向浏览器返回响应时，出现乱码
+
+3. 在 tomcat 的环境下，jvm出现中文乱码（-Dfile.encoding=utf-8）
+
+知道了乱码原因，对于 tomcat + servlet + jsp 来说，挨个步骤排查就很好解决了，这里注意一点就是 tomcat 8 以后的版本，在浏览器get请求服务器的时候，URI上的编码格式，默认就是UTF-8，已经不需要我们修改配置文件了，但是 tomcat 8 之前，还是要在 server.xml 中添加 URIEncoding=“UTF-8”
+
+
 
 
 # Day01：Markdown语法
@@ -1981,9 +2088,95 @@ public static String randNum(){
 
 
 
+# HttpServletRequest
+
+常见应用：
+
+1. 获取请求参数
+2. 请求转发
+
+模拟一个登录页面以及登录后的跳转
+
+1. 登录页面login.jsp，action中的`${pageContext.request.contextPath}`表示项目路径
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<body>
+<form action="${pageContext.request.contextPath}/login" method="post">
+    用户名：<input type="text" name="username"/> <br />
+    密码：<input type="password" name="password" /> <br />
+    爱好：<input type="checkbox" name="hobbys" value="电影">电影
+    	 <input type="checkbox" name="hobbys" value="音乐">音乐<br />
+    <input type="submit" />
+</form>
+</body>
+</html>
+```
+
+2. loginServlet.java
+
+```java
+public class LoginServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/html;charset=utf-8");
+        String username = req.getParameter("username") ;
+        String password = req.getParameter("password");
+        String[] hobbys = req.getParameterValues("hobbys");
+
+        System.out.println("===========");
+        System.out.println("username:"+username+"==password:"+password
+                           +"==hobbys:"+ Arrays.toString(hobbys));
+        System.out.println("===========");        
+	    //请求转发 参数 /main.jsp前的 / 号代表当前web应用
+        req.getRequestDispatcher("/main.jsp").forward(req,resp);
+        /**
+        也可以重定向 这边main.jsp前的 / 号并不是表示 当前web应用
+        resp.sendRedirect(req.getContextPath()+ "/main.jsp");
+        **/
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
+req.getParameter的[乱码问题](##req.getParameter(key)乱码的问题)
+
+3. web.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <servlet>
+        <servlet-name>login</servlet-name>
+        <servlet-class>com.hpr.servlet.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>login</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+      <welcome-file>index.html</welcome-file>
+      <welcome-file>index.htm</welcome-file>
+      <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
 
 
+</web-app>
+```
 
+**注意：web.xml要2.5版本以上否者使用重定向的时候路径会**
 
 
 
