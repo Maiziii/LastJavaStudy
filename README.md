@@ -2176,7 +2176,31 @@ req.getParameter的[乱码问题](##req.getParameter(key)乱码的问题)
 </web-app>
 ```
 
-**注意：web.xml要2.5版本以上否者使用重定向的时候路径会**
+**注意：Maven创建的web默认是2.3的web.xml 当有jsp**
+
+```jsp
+<form action="${pageContext.request.contextPath}/login" method="post">
+    <input type="text" name="username">
+    <input type="submit">
+</form>
+```
+
+提交的时候发生如下错误
+
+![错误](.\assets.md\webxml25一下版本的action问题.png)
+
+**web.xml需要2.5以上版本，模板如下**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    
+</web-app>
+```
 
 
 
