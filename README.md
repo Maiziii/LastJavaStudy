@@ -116,7 +116,9 @@ resp.setCharacterEncoding("utf-8");// 这个是告诉浏览器，服务器返回
 
 知道了乱码原因，对于 tomcat + servlet + jsp 来说，挨个步骤排查就很好解决了，这里注意一点就是 tomcat 8 以后的版本，在浏览器get请求服务器的时候，URI上的编码格式，默认就是UTF-8，已经不需要我们修改配置文件了，但是 tomcat 8 之前，还是要在 server.xml 中添加 URIEncoding=“UTF-8”
 
+# IDEA 快捷键
 
+- Ctrl + Alt + L 格式化代码
 
 
 # Day01：Markdown语法
@@ -2090,10 +2092,10 @@ public static String randNum(){
 
 # HttpServletRequest
 
-常见应用：
+**常见应用：**
 
-1. 获取请求参数
-2. 请求转发
+1. **获取请求参数**
+2. **请求转发**
 
 模拟一个登录页面以及登录后的跳转
 
@@ -2202,5 +2204,47 @@ req.getParameter的[乱码问题](##req.getParameter(key)乱码的问题)
 </web-app>
 ```
 
+# Cookie
 
+服务器响应给客户端cookie
+
+```java
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("utf-8");
+        resp.setContentType("text/html;charset=utf-8");
+        Cookie[] cookies = req.getCookies();
+        PrintWriter out = resp.getWriter();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("lastlogintime")) {
+                    String value = cookie.getValue();
+                    out.write("您上一次登录时间：" 
+                              + new Date(Long.parseLong(value)).toLocaleString());
+                }
+            }
+        } else {
+            System.out.println("第一次登录系统");
+            out.write("第一次登录系统");
+        }
+        Cookie cookie = new Cookie("lastlogintime", System.currentTimeMillis() + "");
+        //cookie.setMaxAge(86400);
+        resp.addCookie(cookie);
+    }
+```
+
+- 一个cookie只能保持一个信息；
+- 一个web站点可以给浏览器发送多个cookie，最多20个cookie
+- cookie大小限制4kb
+
+## 删除cookie
+
+- 不设置有效期，关闭浏览器cookie失效
+- 设置有效期为0  `cookie.setMaxAge(0)`
+
+# 编码&解码
+
+```java
+URLEncoder.encode("我是你爸爸","utf-8");
+URLDecoder.decode(cookie.getValue(),"utf-8");
+```
 
