@@ -2248,3 +2248,174 @@ URLEncoder.encode("我是你爸爸","utf-8");
 URLDecoder.decode(cookie.getValue(),"utf-8");
 ```
 
+# Session
+
+保存在服务端的信息，浏览器第一次访问系统，系统产生SessionId和其他Session的数据，然后将SessionId发给浏览器，之后浏览器发起请求时携带该SessionId服务器就能识别浏览器。
+
+常见应用：
+
+- 登录信息
+- 购物车
+- 系统应用常用的数据可以存在Session中
+
+```java
+HttpSession session = req.getSession();
+Enumeration<String> attributeNames = session.getAttributeNames();//获取所有session key
+session.setAttribute("name","value"); //设置session
+session.removeAttribute("name"); //删除某session
+session.invalidate(); //使session失效  类似登录中的注销
+```
+
+web.xml设置session失效时间
+
+```xml
+<session-config>
+    <!-- 单位：分钟 -->
+    <session-timeout>15</session-timeout>
+</session-config>
+```
+
+# JSP 
+
+Java Server Pages :Java服务器端页面，和Servlet一样，用于动态Web技术。
+
+最大的特点：
+
+- 写JSP就像是在写HTML
+- 区别：
+  - HTML只给用户提供静态数据
+  - JSP可以嵌入JAVA代码，为用户提供动态数据
+
+**浏览器访问服务器页面，本质上都是在访问Servlet**
+
+JSP最终也会被转化成Servlet
+
+Tomcat中有个work目录，IDEA的Tomcat work目录如下，可以找到jsp的转化之后的.java和.class文件，用户访问一个jsp页面其实最终服务器返回的时候由该jsp转化而成的Servlet的.calss文件
+
+![image-20210429154020483](.\assets.md\IDEA中Tomcat的work路径.png)
+
+![image-20210429154114459](.\assets.md\JSP转化成jsp点java文件.png)
+
+![image-20210429154448895](.\assets.md\Jsp继承HttpJspBase继承HttpServlet.png)
+
+JSP内置的一些对象
+
+```java
+final javax.servlet.jsp.PageContext pageContext; //页面上下文
+javax.servlet.http.HttpSession session = null;  //Session
+final javax.servlet.ServletContext application; //applicationContext作用域很高
+final javax.servlet.ServletConfig config;
+javax.servlet.jsp.JspWriter out = null;
+final java.lang.Object page = this;
+javax.servlet.jsp.PageContext _jspx_page_context = null;
+```
+
+**JSP本质是一个Servlet，JSP继承HttpJspBase类，HttpJspBase类继承HttpServlet**
+
+```java
+//HttpJspBase类
+//初始化
+public final void _jspInit(ServletConfig config) throws ServletException {
+}
+//销毁
+public final void _jspDestroy() {
+}
+//JSP Service
+public final void _jspService(HttpServletRequest req, HttpServletResponse resp){
+}
+```
+
+（项目导入Tomcat的lib包，IDEA-Project Structure-Libraries-点击+号 - 选择Tomcat的lib文件 - 应用）
+
+**Jsp的基础语法**
+
+- jsp表达式
+
+```jsp
+<%= 变量或者表达式 %>
+
+<!-- EL表达式 -->
+${pageContext.request.contextPath}
+```
+
+- jsp脚本片段
+
+```jsp
+声明的变量和方法将被提高到类中而不是_jspService()方法<% for (int i = 0; i < 5; i++) {
+    System.out.println(i);
+}%>
+<!-- -->
+<% for (int i = 0; i < 5; i++) {%>
+    <h1>序号：<%=i%></h1>
+<%}%>
+<!-- 结合El表达式 -->
+<% for (int i = 0; i < 5; i++) {%>
+    <h1>序号：${i}</h1>
+<%}%>
+```
+
+- jsp声明
+
+  jsp声明会被编译到jsp生成的类中，上面的2个方式会被生成到_jspService()方法中
+
+```jsp
+<%!
+static {
+    System.out.println("static");
+}
+String _ss = "sss";
+public void Sum(){
+    System.out.println("中");
+}
+%>
+```
+
+![image-20210430165119074](.\assets.md\JSP声明.png)
+
+- 注释
+
+```jsp
+<%--  这个是jsp的注释，不会显示在客户端页面上  --%>
+<!--  这个是html的注释，会显示在客户端页面上  --->
+```
+
+**JSP指令**
+
+```jsp
+<%@ page args.. %>
+<!--例如-->
+<%@ page import="java.util.*" %> <!--导入包-->
+<%@ page errorPage="error.jsp" %> <!--错误页面-->
+
+<!--include-->
+<%@ include file="header.jsp" %> 
+<!--
+类似include的jsp标签，
+区别：
+	上面的include其实是一个页面，代码会有冲突；
+	下面的jsp:include是多个页面，代码不会有冲突
+-->
+<jsp:include page="header.jsp" />
+```
+
+**web.xml设置错误页面**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    ...
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error/404.jsp</location>
+    </error-page>
+</web-app>
+```
+
+
+
+
+
