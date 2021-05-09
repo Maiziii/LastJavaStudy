@@ -2335,21 +2335,21 @@ public final void _jspService(HttpServletRequest req, HttpServletResponse resp){
 ```jsp
 <%= 变量或者表达式 %>
 
-<!-- EL表达式 -->
+<%-- EL表达式 --%>
 ${pageContext.request.contextPath}
 ```
 
 - jsp脚本片段
 
 ```jsp
-声明的变量和方法将被提高到类中而不是_jspService()方法<% for (int i = 0; i < 5; i++) {
+<% for (int i = 0; i < 5; i++) {
     System.out.println(i);
 }%>
-<!-- -->
+<%-- --%>
 <% for (int i = 0; i < 5; i++) {%>
     <h1>序号：<%=i%></h1>
 <%}%>
-<!-- 结合El表达式 -->
+<%-- 结合El表达式 --%>
 <% for (int i = 0; i < 5; i++) {%>
     <h1>序号：${i}</h1>
 <%}%>
@@ -2366,7 +2366,7 @@ static {
 }
 String _ss = "sss";
 public void Sum(){
-    System.out.println("中");
+    System.out.println("声明的变量和方法将被提高到类中而不是_jspService()方法中");
 }
 %>
 ```
