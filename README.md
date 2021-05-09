@@ -119,6 +119,7 @@ resp.setCharacterEncoding("utf-8");// 这个是告诉浏览器，服务器返回
 # IDEA 快捷键
 
 - Ctrl + Alt + L 格式化代码
+- 自动补全Html标签 比如 输入`div`后按`TAB键`会自动生成`<div></div>`
 
 
 # Day01：Markdown语法
